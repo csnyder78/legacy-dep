@@ -9,8 +9,7 @@ chkconfig mysqld on
 
 service mysqld start
 
-mysql_secure_installation  use scna for root password
-
+mysql_secure_installation 
 
 #####get deps **goto github if you can't get them for some reason.
 
@@ -30,18 +29,18 @@ rpm -ivh php5-pear-phpexcel-1.7.8-2.1.noarch.rpm
 rpm -ivh eva.kung.fu
 
 #install databases
-mysql -u root -pscna -e "create database weblinkid; create database weblinkid_prereg; create database weblinkid_plugins;create user 'weblinkid'@'localhost' identified by 'scna'; grant select, delete, insert, trigger, update on weblinkid.* to 'weblinkid'@'localhost'; grant select, delete, insert, trigger, update on weblinkid_prereg.* to 'weblinkid'@'localhost'; grant all privileges on weblinkid_plugins.* to 'weblinkid'@'localhost';"
+mysql -u root -pPASSWORD-e "create database weblinkid; create database weblinkid_prereg; create database weblinkid_plugins;create user 'weblinkid'@'localhost' identified by 'PASSWORD'; grant select, delete, insert, trigger, update on weblinkid.* to 'weblinkid'@'localhost'; grant select, delete, insert, trigger, update on weblinkid_prereg.* to 'weblinkid'@'localhost'; grant all privileges on weblinkid_plugins.* to 'weblinkid'@'localhost';"
 
-mysql -u root --database=weblinkid -pscna < /var/lib/eva/schema/mysql.prereg.blank-1.5.268.sql
+mysql -u root --database=weblinkid -pPASSWORD < /var/lib/eva/schema/mysql.prereg.blank-1.5.268.sql
 
-mysql -u root --database=weblinkid -pscna < /var/lib/eva/schema/mysql.blank-1.5.268.sql
+mysql -u root --database=weblinkid -pPASSWORD < /var/lib/eva/schema/mysql.blank-1.5.268.sql
 
 #Other configs to change and files to get (if needed)
 
 
 /etc/httpd/conf.d/eva.conf change ServName/delete ServerAdmin/delete SSLCompression
 
-cp /etc/eva/config.example.json /etc/eva/config.json   change user:pass weblinkid:scna 
+cp /etc/eva/config.example.json /etc/eva/config.json   change user:pass weblinkid:PASSWORD 
 
 scp root@192.168.196.150:/etc/httpd/conf/httpd.conf /etc/httpd/conf/
 
