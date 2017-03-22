@@ -1,1 +1,58 @@
-files needed for Legacy deps.
+centOS 6 Legacy install
+wget http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+
+rpm -ivh epel-release-6-8.noarch.rpm
+
+yum -y install php php-pear php-myadmin mysql-server ntp php-mcrypt php-mssql install php-tcpdf php-mysql php-gd mod_ssl PHPExcel php-pecl-zendopcache npm nodejs php-soap php-pclzip
+
+chkconfig mysqld on
+
+service mysqld start
+
+mysql_secure_installation  use scna for root password
+
+
+#####get deps **goto github if you can't get them for some reason.
+
+wget https://github.com/ValidUSA/legacy-dep/blob/master/Legacy/php5-pear-channel-pearplex-1.0-1.1.noarch.rpm
+wget https://github.com/ValidUSA/legacy-dep/blob/master/Legacy/php5-pear-phpexcel-1.7.8-2.1.noarch.rpm
+wget https://github.com/ValidUSA/legacy-dep/tree/master/Legacy/propel
+
+cp propel to /usr/share/pear
+
+
+rpm -ivh php5-pear-channel-pearplex-1.0-1.1.noarch.rpm 
+
+rpm -ivh php5-pear-phpexcel-1.7.8-2.1.noarch.rpm
+
+##install eva
+##need to get the rpm after the jenkins build.  need to scrip this process out.
+rpm -ivh eva.kung.fu
+
+#install databases
+mysql -u root -pscna -e "create database weblinkid; create database weblinkid_prereg; create database weblinkid_plugins;create user 'weblinkid'@'localhost' identified by 'scna'; grant select, delete, insert, trigger, update on weblinkid.* to 'weblinkid'@'localhost'; grant select, delete, insert, trigger, update on weblinkid_prereg.* to 'weblinkid'@'localhost'; grant all privileges on weblinkid_plugins.* to 'weblinkid'@'localhost';"
+
+mysql -u root --database=weblinkid -pscna < /var/lib/eva/schema/mysql.prereg.blank-1.5.268.sql
+
+mysql -u root --database=weblinkid -pscna < /var/lib/eva/schema/mysql.blank-1.5.268.sql
+
+#Other configs to change and files to get (if needed)
+
+
+/etc/httpd/conf.d/eva.conf change ServName/delete ServerAdmin/delete SSLCompression
+
+cp /etc/eva/config.example.json /etc/eva/config.json   change user:pass weblinkid:scna 
+
+scp root@192.168.196.150:/etc/httpd/conf/httpd.conf /etc/httpd/conf/
+
+#self signed cert  do this in /etc/pki/httpd/
+
+openssl genrsa -des3 -out server.key 1024
+
+openssl req -new -key server.key -out server.csr
+
+cp server.key server.key.org
+
+openssl rsa -in server.key.org -out server.key
+
+openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt
