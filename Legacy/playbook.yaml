@@ -1,36 +1,66 @@
 ---
+- hosts: guam
+  remote_user: root
+  tasks:
 
-- name: download epel
-  get_url:
-  url: http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
-  dest: /tmp/epel-release-6-8.noarch.rpm
+#  - name: download epel
+#    get_url:
+#      url: http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+#      dest: /tmp/epel-release-6-8.noarch.rpm
 
-- name: Install EPEL Repo - Centos/RHEL 6
-  command: rpm -ivh /tmp/epel-release-6-8.noarch.rpm
+  - name: Install EPEL Repo - Centos/RHEL 6
+    yum: 
+      name: http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+      state: present
   
 
-- name: Install list of packages
-  yum: name={{item}} state=installed
-  with_items:
-        - php 
-        - php-pear
-        - php-pecl
-        - mysql-server
-        - ntp
-        - php-mcrypt
-        - php-mssql
-        - php-tcpdf
-        - php-mysql
-        - php-gd
-        - mod_ssl
-        - PHPExcel
-        - php-pecl-zendopcache
-        - npm
-        - nodejs
-        - php-soap
-        - php-pclzip
-        - php-myadmin
+  - name: Install list of packages
+    yum: name={{item}} state=installed
+    with_items:
+      - php 
+      - php-pear
+      - mysql-server
+      - ntp
+      - php-mcrypt
+      - php-mssql
+      - php-tcpdf
+      - php-mysql
+      - php-gd
+      - mod_ssl
+      - php-pecl-zendopcache
+      - npm
+      - nodejs
+      - php-soap
+      - php-pclzip
 
--copy:
-  src:   
+
         
+  - name: download pearplex
+    get_url:
+      url: https://github.com/ValidUSA/legacy-dep/blob/master/Legacy/php5-pear-channel-pearplex-1.0-1.1.noarch.rpm
+      dest: /tmp/php5-pear-channel-pearplex-1.0-1.1.noarch.rpm
+
+  - name: download phpexcel
+    get_url:
+      url: https://github.com/ValidUSA/legacy-dep/blob/master/Legacy/php5-pear-phpexcel-1.7.8-2.1.noarch.rpm
+      dest: /tmp/php5-pear-phpexcel-1.7.8-2.1.noarch.rpm
+  - name: download propel
+    get_url:
+      url: https://github.com/ValidUSA/legacy-dep/blob/master/Legacy/propel
+      dest: /usr/share/pear/propel
+
+  - name: upgrade all pkgs
+    yum:
+     name: '*'
+     state: latest
+##service changes
+  - service: 
+      name: mysqld
+      enabled: yes
+
+  - service:
+      name: mysqld
+      state: started
+      
+  
+
