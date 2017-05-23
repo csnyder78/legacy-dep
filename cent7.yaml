@@ -1,0 +1,72 @@
+---
+- hosts: aws
+  remote_user: maintuser
+  become: true
+  become_user: root
+  tasks:
+  
+  - name: Install EPEL Repo - Centos/RHEL 7
+    yum: 
+      name: http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-9.noarch.rpm
+      state: present
+  - name: Install mysql community
+    yum:
+      name: http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm
+
+  - name: Install list of packages
+    yum: name={{item}} state=installed
+    with_items:
+      - php 
+      - php-pear
+      - mysql
+      - ntp
+      - php-mcrypt
+      - php-mssql
+      - php-tcpdf
+      - php-mysql
+      - php-gd
+      - mod_ssl
+      - php-pecl-zendopcache
+      - npm
+      - nodejs
+      - php-soap
+      - php-pclzip
+
+#eva deps
+        
+  - unarchive:
+      src: https://github.com/ValidUSA/legacy-dep/raw/master/Legacy/propel.tar.gz
+      dest: /usr/share/pear/
+      remote_src: True
+
+  - name: upgrade all pkgs
+    yum:
+     name: '*'
+     state: latest
+
+  - name: pearplex
+    yum:
+      name: https://github.com/ValidUSA/legacy-dep/raw/master/Legacy/php5-pear-channel-pearplex-1.0-1.1.noarch.rpm
+      state: present
+      disable_gpg_check: yes
+
+  - name: phpexcel
+    yum:
+      name: https://github.com/ValidUSA/legacy-dep/raw/master/Legacy/php5-pear-phpexcel-1.7.8-2.1.noarch.rpm
+
+  - name: install grunt
+    npm:
+      name: grunt-cli
+      global: yes
+
+##service changes
+  - service: 
+      name: mysqld
+      enabled: yes
+
+  - service:
+      name: mysqld
+      state: started
+      
+  
+
